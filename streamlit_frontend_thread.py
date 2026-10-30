@@ -15,9 +15,13 @@ def reset_chat():
   add_thread(st.session_state['thread_id'])
   st.session_state['message_history'] = []
 
+# this function will add all the thread-id in list chat_threads
 def add_thread(thread_id):
   if thread_id not in st.session_state['chat_threads']:
     st.session_state['chat_threads'].append(thread_id)
+
+def load_conversation(thread_id):
+  return chatbot.get_state(config=CONFIG).values['messages']
 
 
 
@@ -45,10 +49,11 @@ if st.sidebar.button('New Chat'):
 
 st.sidebar.header("My conversation")
 
+# this will show all the thread_id in sidebar
 for thread_id in st.session_state['chat_threads']:
-  st.sidebar.text(thread_id)
+  st.sidebar.button(str(thread_id))
 
-  
+
 #st.sidebar.text(st.session_state['thread_id'])
 
 # -------------------Main UI ------------------
