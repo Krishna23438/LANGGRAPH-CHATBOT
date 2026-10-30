@@ -51,7 +51,21 @@ st.sidebar.header("My conversation")
 
 # this will show all the thread_id in sidebar
 for thread_id in st.session_state['chat_threads']:
-  st.sidebar.button(str(thread_id))
+  if st.sidebar.button(str(thread_id)):
+    st.session_state['thread_id'] = thread_id
+    messages = load_conversation(thread_id)
+
+    temp_messages = []
+
+    for msg in messages:
+      if isinstance(msg,HumanMessage):
+        role = 'user'
+      else:
+        role="assistant"
+      temp_messages.append({'role':role,'content':msg.content})
+
+    st.session_state['message_history'] = temp_messages
+      
 
 
 #st.sidebar.text(st.session_state['thread_id'])
