@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, START, END
-from typing import TypeDict,Annotated
+from typing import TypedDict,Annotated
 from langchain_core.messages import BaseMessage
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph.message import add_messages
@@ -13,7 +13,7 @@ llm = ChatGroq(
     temperature=0.7
 )
 
-class ChatState(TypeDict):
+class ChatState(TypedDict):
   messages:Annotated[list[BaseMessage],add_messages]
 
 
