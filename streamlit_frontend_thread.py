@@ -9,6 +9,11 @@ def generate_thread_id():
   thread_id = uuid.uuid4()
   return thread_id
 
+def reset_chat():
+  thread_id = generate_thread_id()
+  st.session_state['thread_id'] = thread_id
+  st.session_state['message_history'] = []
+
 
 
 # -----------------Session Setup --------------
