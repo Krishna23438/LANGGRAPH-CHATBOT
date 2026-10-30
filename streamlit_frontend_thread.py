@@ -21,7 +21,7 @@ def add_thread(thread_id):
     st.session_state['chat_threads'].append(thread_id)
 
 def load_conversation(thread_id):
-  return chatbot.get_state(config=CONFIG).values['messages']
+  return chatbot.get_state(config={'configurable':{'thread_id':thread_id}}).values['messages']
 
 
 
