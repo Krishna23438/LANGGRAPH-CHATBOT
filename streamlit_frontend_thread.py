@@ -45,7 +45,11 @@ if st.sidebar.button('New Chat'):
 
 st.sidebar.header("My conversation")
 
-st.sidebar.text(st.session_state['thread_id'])
+for thread_id in st.session_state['chat_threads']:
+  st.sidebar.text(thread_id)
+
+  
+#st.sidebar.text(st.session_state['thread_id'])
 
 # -------------------Main UI ------------------
 
