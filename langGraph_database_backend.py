@@ -2,7 +2,7 @@
 from langgraph.graph import StateGraph, START, END
 from typing import TypedDict, Annotated
 
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage,HumanMessage
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph.message import add_messages
 
@@ -60,3 +60,13 @@ graph.add_edge("chat_node", END)
 chatbot = graph.compile(
     checkpointer=checkpointer
 )
+
+CONFIG = {'configurable':{'thread_id':'thread-1'}}
+
+response = chatbot.invoke(
+        {'messages':[HumanMessage(content="Hi my name is krishna")]},
+        config=CONFIG,
+       
+      )
+
+print(response)
