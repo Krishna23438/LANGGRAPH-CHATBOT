@@ -9,6 +9,20 @@ def generate_thread_id():
   thread_id = uuid.uuid4()
   return str(thread_id)
 
+def generate_chat_title(user_input):
+    """
+    Generate a short title from the first user message.
+    No additional LLM API call is required.
+    """
+    title = " ".join(user_input.strip().split())
+
+    if len(title) > 35:
+        title = title[:35].rsplit(" ", 1)[0] + "..."
+
+    return title or "New Chat"
+
+
+
 def reset_chat():
   thread_id = generate_thread_id()
   st.session_state['thread_id'] = thread_id
@@ -20,6 +34,9 @@ def reset_chat():
 def add_thread(thread_id):
   if thread_id not in st.session_state['chat_threads']:
     st.session_state['chat_threads'].append(thread_id)
+
+  if thread_id not in st.session_state["chat_titles"]:
+        st.session_state["chat_titles"][thread_id] = "New Chat"
 
 def load_conversation(thread_id):
   # return chatbot.get_state(config={'configurable':{'thread_id':thread_id}}).values['messages']
@@ -59,7 +76,7 @@ add_thread(st.session_state['thread_id'])
 
 st.sidebar.title("LangGraph Chatbot")
 
-if st.sidebar.button('New Chat'):
+if st.sidebar.button('➕ New Chat'):
   reset_chat()
   st.rerun()
 
@@ -67,7 +84,13 @@ st.sidebar.header("My conversation")
 
 # this will show all the thread_id in sidebar
 for thread_id in st.session_state['chat_threads'][::-1]:
-  if st.sidebar.button(str(thread_id)):
+
+   # Display title instead of thread ID
+  title = st.session_state["chat_titles"].get(
+        thread_id, "New Chat"
+    )
+  
+  if st.sidebar.button(title,key=f"chat_{thread_id}",use_container_width=True):
     st.session_state['thread_id'] = thread_id
     messages = load_conversation(thread_id)
 
@@ -102,6 +125,15 @@ user_input = st.chat_input('Type here')
 
 if user_input:
 
+  thread_id = st.session_state["thread_id"]
+
+    # Generate title only for the first message
+  if not st.session_state["message_history"]:
+
+        title = generate_chat_title(user_input)
+
+        st.session_state["chat_titles"][thread_id] = title
+
 # Display the user's message.
   with st.chat_message('user'):
     st.text(user_input)
@@ -126,6 +158,8 @@ if user_input:
 
     st.session_state['message_history'].append({'role':'assistant','content':ai_message})
 
+    # Refresh sidebar to display the generated title
+    st.rerun()
 
 
 
