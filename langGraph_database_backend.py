@@ -42,7 +42,10 @@ def chat_node(state: ChatState):
 
 # Build graph
 
-checkpointer = SqliteSaver()
+connection = sqlite3.connect(database='chatbot.db',check_same_thread=False)
+
+# checkpinter
+checkpointer = SqliteSaver(conn=connection)
 
 graph = StateGraph(ChatState)
 
