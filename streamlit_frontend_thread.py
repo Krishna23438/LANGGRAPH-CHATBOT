@@ -7,13 +7,14 @@ import uuid
 
 def generate_thread_id():
   thread_id = uuid.uuid4()
-  return thread_id
+  return str(thread_id)
 
 def reset_chat():
   thread_id = generate_thread_id()
   st.session_state['thread_id'] = thread_id
-  add_thread(st.session_state['thread_id'])
+  # add_thread(st.session_state['thread_id'])
   st.session_state['message_history'] = []
+  add_thread(thread_id)
 
 # this function will add all the thread-id in list chat_threads
 def add_thread(thread_id):
@@ -21,7 +22,21 @@ def add_thread(thread_id):
     st.session_state['chat_threads'].append(thread_id)
 
 def load_conversation(thread_id):
-  return chatbot.get_state(config={'configurable':{'thread_id':thread_id}}).values['messages']
+  # return chatbot.get_state(config={'configurable':{'thread_id':thread_id}}).values['messages']
+  config = {
+    "configurable": {
+    "thread_id": thread_id
+    }
+   }
+
+  state = chatbot.get_state(config)
+
+  # Handle a thread with no saved state.
+  if not state or not state.values:
+    return []
+
+  # Safely retrieve messages.
+  return state.values.get("messages", [])
 
 
 
@@ -46,6 +61,7 @@ st.sidebar.title("LangGraph Chatbot")
 
 if st.sidebar.button('New Chat'):
   reset_chat()
+  st.rerun()
 
 st.sidebar.header("My conversation")
 
@@ -65,6 +81,7 @@ for thread_id in st.session_state['chat_threads']:
       temp_messages.append({'role':role,'content':msg.content})
 
     st.session_state['message_history'] = temp_messages
+    st.rerun()
       
 
 
@@ -73,6 +90,9 @@ for thread_id in st.session_state['chat_threads']:
 # -------------------Main UI ------------------
 
 # loading the conversation history
+st.title("Start your conversation")
+
+# Display existing conversation history.
 
 for message in st.session_state['message_history']:
   with st.chat_message(message['role']):
@@ -82,10 +102,13 @@ user_input = st.chat_input('Type here')
 
 if user_input:
 
-  # first add the message to message_history
-  st.session_state['message_history'].append({'role':'user','content':user_input})
+# Display the user's message.
   with st.chat_message('user'):
     st.text(user_input)
+  # first add the message to message_history
+  st.session_state['message_history'].append({'role':'user','content':user_input})
+
+
 
   CONFIG = {'configurable':{'thread_id':st.session_state['thread_id']}}
 
