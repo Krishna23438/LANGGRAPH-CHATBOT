@@ -1,40 +1,58 @@
+
 from langgraph.graph import StateGraph, START, END
-from typing import TypedDict,Annotated
-from langchain.messages import HumanMessage
+from typing import TypedDict, Annotated
+
 from langchain_core.messages import BaseMessage
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph.message import add_messages
+
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+# Initialize LLM
 
 llm = ChatGroq(
     model="openai/gpt-oss-120b",
     temperature=0.7
 )
 
+
+# Define State
+
 class ChatState(TypedDict):
-  messages:Annotated[list[BaseMessage],add_messages]
+    messages: Annotated[list[BaseMessage], add_messages]
 
 
-def chat_node(state:ChatState):
-  messages = state['messages']
-  response = llm.invoke(messages)
-  return {'messages':[response]}
+# Define chatbot node
 
-# checkpointer
+def chat_node(state: ChatState):
+
+    messages = state["messages"]
+
+    response = llm.invoke(messages)
+
+    return {
+        "messages": [response]
+    }
+
+
+# Build graph
+
 checkpointer = InMemorySaver()
-
 
 graph = StateGraph(ChatState)
 
-# Add node
-graph.add_node('chat_node',chat_node)
-graph.add_edge(START,'chat_node')
-graph.add_edge("chat_node",END)
+graph.add_node("chat_node", chat_node)
 
-chatbot  = graph.compile(checkpointer=checkpointer)
+graph.add_edge(START, "chat_node")
+graph.add_edge("chat_node", END)
 
 
+# Compile graph
 
+chatbot = graph.compile(
+    checkpointer=checkpointer
+)
