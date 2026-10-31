@@ -21,7 +21,13 @@ def generate_chat_title(user_input):
 
     return title or "New Chat"
 
+# this function will add all the thread-id in list chat_threads
+def add_thread(thread_id):
+  if thread_id not in st.session_state['chat_threads']:
+    st.session_state['chat_threads'].append(thread_id)
 
+  if thread_id not in st.session_state["chat_titles"]:
+        st.session_state["chat_titles"][thread_id] = "New Chat"
 
 def reset_chat():
   thread_id = generate_thread_id()
@@ -30,13 +36,7 @@ def reset_chat():
   st.session_state['message_history'] = []
   add_thread(thread_id)
 
-# this function will add all the thread-id in list chat_threads
-def add_thread(thread_id):
-  if thread_id not in st.session_state['chat_threads']:
-    st.session_state['chat_threads'].append(thread_id)
 
-  if thread_id not in st.session_state["chat_titles"]:
-        st.session_state["chat_titles"][thread_id] = "New Chat"
 
 def load_conversation(thread_id):
   # return chatbot.get_state(config={'configurable':{'thread_id':thread_id}}).values['messages']
@@ -67,6 +67,9 @@ if 'thread_id' not in st.session_state:
 
 if 'chat_threads' not in st.session_state:
   st.session_state['chat_threads'] = []
+
+if "chat_titles" not in st.session_state:
+    st.session_state["chat_titles"] = {}
 
 add_thread(st.session_state['thread_id'])
 
