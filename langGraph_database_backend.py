@@ -3,11 +3,12 @@ from langgraph.graph import StateGraph, START, END
 from typing import TypedDict, Annotated
 
 from langchain_core.messages import BaseMessage
-from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph.message import add_messages
 
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
+import sqlite3
 
 load_dotenv()
 
@@ -41,7 +42,7 @@ def chat_node(state: ChatState):
 
 # Build graph
 
-checkpointer = InMemorySaver()
+checkpointer = SqliteSaver()
 
 graph = StateGraph(ChatState)
 
