@@ -64,7 +64,7 @@ chatbot = graph.compile(
 CONFIG = {'configurable':{'thread_id':'thread-1'}}
 
 response = chatbot.invoke(
-        {'messages':[HumanMessage(content="Hi my name is krishna")]},
+        {'messages':[HumanMessage(content="What is my name?")]},
         config=CONFIG,
        
       )
