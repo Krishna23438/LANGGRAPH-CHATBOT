@@ -10,16 +10,23 @@ def generate_thread_id():
   return str(thread_id)
 
 def generate_chat_title(user_input):
-    """
-    Generate a short title from the first user message.
-    No additional LLM API call is required.
-    """
     title = " ".join(user_input.strip().split())
 
-    if len(title) > 35:
-        title = title[:35].rsplit(" ", 1)[0] + "..."
+    if not title:
+        return "New Chat"
 
-    return title or "New Chat"
+    max_length = 35
+
+    if len(title) > max_length:
+        shortened_title = title[:max_length].rsplit(" ", 1)[0]
+
+        # Handle messages without spaces
+        if not shortened_title:
+            shortened_title = title[:max_length]
+
+        title = shortened_title + "..."
+
+    return title
 
 # this function will add all the thread-id in list chat_threads
 def add_thread(thread_id):
@@ -136,6 +143,8 @@ if user_input:
         title = generate_chat_title(user_input)
 
         st.session_state["chat_titles"][thread_id] = title
+
+        print("Generated title: ",title)
 
 # Display the user's message.
   with st.chat_message('user'):
