@@ -10,6 +10,11 @@ def generate_thread_id():
   return str(thread_id)
 
 def generate_chat_title(user_input):
+    """
+    Generate a short title using the first user message.
+    No additional LLM API call is required.
+    """
+    
     title = " ".join(user_input.strip().split())
 
     if not title:
