@@ -152,9 +152,13 @@ if user_input:
 
         title = generate_chat_title(user_input)
 
+        # Save title in Streamlit session
         st.session_state["chat_titles"][thread_id] = title
 
-        print("Generated title: ",title)
+         # Save title permanently in SQLite
+        save_chat_title(thread_id, title)
+        
+        
 
 # Display the user's message.
   with st.chat_message('user'):
@@ -163,10 +167,10 @@ if user_input:
   st.session_state['message_history'].append({'role':'user','content':user_input})
 
 
+  # ----------LangGraph Configuration ----------
+  CONFIG = {'configurable':{'thread_id':thread_id}}
 
-  CONFIG = {'configurable':{'thread_id':st.session_state['thread_id']}}
-
-
+  # ----------------- Generate AI Response -----------------
   with st.chat_message('assistant'):
     # st.text(ai_message)
     
@@ -178,6 +182,8 @@ if user_input:
       )
     )
 
+
+ # ----------------- Save Assistant Message -----------------
     st.session_state['message_history'].append({'role':'assistant','content':ai_message})
 
     # Refresh sidebar to display the generated title
