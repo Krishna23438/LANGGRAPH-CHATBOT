@@ -14,7 +14,7 @@ def generate_chat_title(user_input):
     Generate a short title using the first user message.
     No additional LLM API call is required.
     """
-    
+
     title = " ".join(user_input.strip().split())
 
     if not title:
@@ -41,6 +41,7 @@ def add_thread(thread_id):
   if thread_id not in st.session_state["chat_titles"]:
         st.session_state["chat_titles"][thread_id] = "New Chat"
 
+# ----------------- Reset Chat ---------------
 def reset_chat():
   thread_id = generate_thread_id()
   st.session_state['thread_id'] = thread_id
@@ -49,7 +50,7 @@ def reset_chat():
   add_thread(thread_id)
 
 
-
+# ------------- Load Conversation ---------
 def load_conversation(thread_id):
   # return chatbot.get_state(config={'configurable':{'thread_id':thread_id}}).values['messages']
   config = {
@@ -83,6 +84,8 @@ if 'chat_threads' not in st.session_state:
 if "chat_titles" not in st.session_state:
     st.session_state["chat_titles"] = retrieve_chat_titles()
 
+
+# Add current thread to session
 add_thread(st.session_state['thread_id'])
 
 
@@ -91,9 +94,13 @@ add_thread(st.session_state['thread_id'])
 
 st.sidebar.title("LangGraph Chatbot")
 
-if st.sidebar.button('New Chat'):
-  reset_chat()
-  st.rerun()
+# New Chat Button
+
+if st.sidebar.button("New Chat", use_container_width=True):
+
+    reset_chat()
+
+    st.rerun()
 
 st.sidebar.header("My conversation")
 
@@ -122,8 +129,6 @@ for thread_id in st.session_state['chat_threads'][::-1]:
     st.rerun()
       
 
-
-#st.sidebar.text(st.session_state['thread_id'])
 
 # -------------------Main UI ------------------
 
