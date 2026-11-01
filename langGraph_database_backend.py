@@ -68,3 +68,35 @@ def retrieve_all_threads():
 
 
     return list(all_thread)
+
+# Create table for conversation titles
+
+connection.execute("""
+    CREATE TABLE IF NOT EXISTS chat_titles (
+        thread_id TEXT PRIMARY KEY,
+        title TEXT
+    )
+""")
+
+connection.commit()
+
+def save_chat_title(thread_id, title):
+
+    connection.execute(
+        """
+        INSERT OR REPLACE INTO chat_titles (thread_id, title)
+        VALUES (?, ?)
+        """,
+        (thread_id, title)
+    )
+
+    connection.commit()
+
+
+def retrieve_chat_titles():
+
+    cursor = connection.execute(
+        "SELECT thread_id, title FROM chat_titles"
+    )
+
+    return dict(cursor.fetchall())

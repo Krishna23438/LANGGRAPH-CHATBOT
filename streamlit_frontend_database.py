@@ -1,5 +1,5 @@
 import streamlit as st
-from langGraph_database_backend import chatbot,retrieve_all_threads
+from langGraph_database_backend import chatbot,retrieve_all_threads ,save_chat_title,retrieve_chat_titles
 from langchain.messages import HumanMessage
 import uuid
 
