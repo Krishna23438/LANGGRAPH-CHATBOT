@@ -168,8 +168,14 @@ if user_input:
 
 
   # ----------LangGraph Configuration ----------
-  CONFIG = {'configurable':{'thread_id':thread_id}}
-
+  # CONFIG = {'configurable':{'thread_id':thread_id}}
+  CONFIG = {
+     "configurable":{"thread_id":thread_id},
+     'metadata':{
+        "thread_id":thread_id
+     },
+     "run_name":"chat_turn",
+  }
   # ----------------- Generate AI Response -----------------
   with st.chat_message('assistant'):
     # st.text(ai_message)
