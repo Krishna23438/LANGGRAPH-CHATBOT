@@ -134,7 +134,7 @@ if st.sidebar.button("New Chat", use_container_width=True):
 st.sidebar.header("My conversation")
 
 # this will show all the thread_id in sidebar
-for thread_id in st.session_state['chat_threads'][::-1]:
+for thread_id in reversed(st.session_state['chat_threads']):
 
    # Display title instead of thread ID
   title = st.session_state["chat_titles"].get(
@@ -227,6 +227,3 @@ if user_input:
 
     # Refresh sidebar to display the generated title
     st.rerun()
-
-
-
