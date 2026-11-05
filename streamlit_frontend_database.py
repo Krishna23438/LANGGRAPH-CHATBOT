@@ -115,7 +115,7 @@ if 'thread_id' not in st.session_state:
 
 
 # Add current thread to session
-add_thread(st.session_state['thread_id'])
+# add_thread(st.session_state['thread_id'])
 
 
 
@@ -170,7 +170,11 @@ for message in st.session_state['message_history']:
   with st.chat_message(message['role']):
     st.text(message['content'])
 
-user_input = st.chat_input('Type here')
+if st.session_state['thread_id'] is None:
+    st.info("Click on 'New Chat' to start a conversation.")
+    user_input = None
+else:
+    user_input = st.chat_input('Type here')
 
 if user_input:
 
