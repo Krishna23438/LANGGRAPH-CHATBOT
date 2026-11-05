@@ -75,14 +75,43 @@ def load_conversation(thread_id):
 if 'message_history' not in st.session_state:
   st.session_state['message_history'] = []
 
-if 'thread_id' not in st.session_state:
-  st.session_state['thread_id'] = generate_thread_id()
-
 if 'chat_threads' not in st.session_state:
   st.session_state['chat_threads'] = retrieve_all_threads()
 
 if "chat_titles" not in st.session_state:
     st.session_state["chat_titles"] = retrieve_chat_titles()
+
+# Load the most recent existing thread instead of generating a new one.
+if 'thread_id' not in st.session_state:
+
+    if st.session_state['chat_threads']:
+        thread_id = st.session_state['chat_threads'][-1]
+
+        st.session_state['thread_id'] = thread_id
+
+        messages = load_conversation(thread_id)
+
+        temp_messages = []
+
+        for msg in messages:
+
+            if isinstance(msg, HumanMessage):
+                role = 'user'
+            else:
+                role = 'assistant'
+
+            temp_messages.append({
+                'role': role,
+                'content': msg.content
+            })
+
+        st.session_state['message_history'] = temp_messages
+
+    else:
+        # No existing conversation. Wait for the user to click New Chat.
+        st.session_state['thread_id'] = None
+
+
 
 
 # Add current thread to session
