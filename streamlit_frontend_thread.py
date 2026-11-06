@@ -185,7 +185,13 @@ if user_input:
           if isinstance(message_chunk,AIMessage):
              yield message_chunk.content
 
-  ai_message = st.write_stream(ai_only_stream())
+    ai_message = st.write_stream(ai_only_stream())
+
+    # Finalize only if a tool was actually used 
+    if status_holder['box'] is not None:
+       status_holder['box'].update(
+          label="✅ Tool finished", state='complete',expanded=False
+       )
 
   st.session_state['message_history'].append({'role':'assistant','content':ai_message})
 
