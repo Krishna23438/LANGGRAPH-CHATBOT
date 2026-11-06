@@ -1,6 +1,6 @@
 import streamlit as st
 from langraph_tool_backend import chatbot
-from langchain.messages import HumanMessage,AIMessage
+from langchain.messages import HumanMessage,AIMessage,ToolMessage
 import uuid
 
 # ----------------- utility function-----------
@@ -34,7 +34,7 @@ def reset_chat():
   st.session_state['thread_id'] = thread_id
   # add_thread(st.session_state['thread_id'])
   st.session_state['message_history'] = []
-  add_thread(thread_id)
+  add_thread(st.session_state['threas_id'])
 
 
 
@@ -83,7 +83,7 @@ if st.sidebar.button('New Chat'):
   reset_chat()
   st.rerun()
 
-st.sidebar.header("My conversation")
+st.sidebar.header("My Conversations")
 
 # this will show all the thread_id in sidebar
 for thread_id in st.session_state['chat_threads'][::-1]:
@@ -137,27 +137,51 @@ if user_input:
 
         st.session_state["chat_titles"][thread_id] = title
 
+# first add the message to message_history
+  st.session_state['message_history'].append({'role':'user','content':user_input})
 # Display the user's message.
   with st.chat_message('user'):
     st.text(user_input)
-  # first add the message to message_history
-  st.session_state['message_history'].append({'role':'user','content':user_input})
 
 
 
-  CONFIG = {'configurable':{'thread_id':st.session_state['thread_id']}}
+
+  CONFIG = {
+     'configurable':{'thread_id':st.session_state['thread_id']},
+     "metadata":{"thread_id":st.session_state['thread_id']},
+     'run_name':'chat_turn'
+  }
 
 
 
     # st.text(ai_message)
     
   with st.chat_message("assistant"):
+    # Use a mutable holder so the generator can set/modify it 
+    status_holder = {'box':None}
+
     def ai_only_stream():
        for message_chunk , metadata in chatbot.stream(
           {'messages':[HumanMessage(content=user_input)]},
           config=CONFIG,
           stream_mode='messages'
        ):
+          # Lazily create & update the SAME status container when any tool runs
+          if isinstance(message_chunk,ToolMessage):
+             tool_name = getattr(message_chunk,"name","tool")
+             if status_holder['box'] is None:
+                status_holder['box'] = st.status(
+                   f"🔧  Using `{tool_name}`...",expanded=True
+                )
+             else:
+                status_holder['box'].update(
+                   label=f"🔧 Using `{tool_name}`...",
+                   state='running',
+                   expanded=True
+
+                )
+
+          # Stream ONLY assistant tokens
           if isinstance(message_chunk,AIMessage):
              yield message_chunk.content
 
