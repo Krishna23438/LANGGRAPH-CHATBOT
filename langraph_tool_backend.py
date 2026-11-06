@@ -10,8 +10,13 @@ from langchain_core.tools import tool
 from dotenv import load_dotenv
 import sqlite3
 import requests
+import os
+
+
 
 load_dotenv()
+
+api_key = os.getenv('ALPHA_VANTAGE_API_KEY')
 
 # 1. LLM
 llm = ChatGroq(
@@ -59,7 +64,7 @@ def get_stock_price(symbol: str) -> dict:
         "function": "TIME_SERIES_INTRADAY",
         "symbol": symbol.upper(),
         "interval": "5min",
-        "apikey": "CUSRY2BWCITFJC7M"
+        "apikey": api_key
     }
 
     try:
