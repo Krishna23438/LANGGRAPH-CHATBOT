@@ -1,6 +1,6 @@
 import streamlit as st
 from langraph_tool_backend import chatbot
-from langchain.messages import HumanMessage
+from langchain.messages import HumanMessage,AIMessage
 import uuid
 
 # ----------------- utility function-----------
@@ -148,21 +148,25 @@ if user_input:
   CONFIG = {'configurable':{'thread_id':st.session_state['thread_id']}}
 
 
-  with st.chat_message('assistant'):
+
     # st.text(ai_message)
     
-    ai_message = st.write_stream(
-      message_chunk.content for message_chunk, metadata in chatbot.stream(
-        {'messages':[HumanMessage(content=user_input)]},
-        config=CONFIG,
-        stream_mode='messages'
-      )
-    )
+  with st.chat_message("assistant"):
+    def ai_only_stream():
+       for message_chunk , metadata in chatbot.stream(
+          {'messages':[HumanMessage(content=user_input)]},
+          config=CONFIG,
+          stream_mode='messages'
+       ):
+          if isinstance(message_chunk,AIMessage):
+             yield message_chunk.content
 
-    st.session_state['message_history'].append({'role':'assistant','content':ai_message})
+  ai_message = st.write_stream(ai_only_stream())
 
-    # Refresh sidebar to display the generated title
-    st.rerun()
+  st.session_state['message_history'].append({'role':'assistant','content':ai_message})
+
+    # Refresh sidebar to display the generated titlechat
+  st.rerun()
 
 
 
